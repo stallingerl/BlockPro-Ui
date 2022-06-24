@@ -37,7 +37,7 @@ import Usa from "assets/img/dashboards/usa.png";
 import MiniCalendar from "components/calendar/MiniCalendar";
 import MiniStatistics from "components/card/MiniStatistics";
 import IconBox from "components/icons/IconBox";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   MdAddTask,
   MdAttachMoney,
@@ -56,9 +56,30 @@ import {
   columnsDataComplex,
 } from "views/admin/default/variables/columnsData";
 import tableDataCheck from "views/admin/default/variables/tableDataCheck.json";
-import tableDataComplex from "views/admin/default/variables/tableDataComplex.json";
+//import tableDataComplex from "views/admin/default/variables/tableDataComplex.json";
 
 export default function UserReports() {
+
+  const [loading, setLoading] = useState(true);
+
+  const [tableDataComplex, setData] = useState([]);
+
+  useEffect(() => {
+    (async () => {
+      fetch("/admin/default")
+        .then((res) => res.json())
+        .then((json) => {
+          setLoading(false);
+          setData(json);
+          console.log("result ", json)
+        })
+        .catch(error => {
+          setLoading(false);
+          console.log(error)
+        })
+    })();
+  }, []);
+
   // Chakra Color Mode
   const brandColor = useColorModeValue("brand.500", "white");
   const boxBg = useColorModeValue("secondaryGray.300", "whiteAlpha.100");
@@ -158,10 +179,11 @@ export default function UserReports() {
         </SimpleGrid>
       </SimpleGrid>
       <SimpleGrid columns={{ base: 1, md: 1, xl: 2 }} gap='20px' mb='20px'>
+      {loading == false && (
         <ComplexTable
           columnsData={columnsDataComplex}
           tableData={tableDataComplex}
-        />
+        />)}
         <SimpleGrid columns={{ base: 1, md: 2, xl: 2 }} gap='20px'>
           <Tasks />
           <MiniCalendar h='100%' minW='100%' selectRange={false} />

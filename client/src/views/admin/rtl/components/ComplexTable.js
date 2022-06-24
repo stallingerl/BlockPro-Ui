@@ -65,7 +65,7 @@ export default function ColumnsTable(props) {
           fontSize='22px'
           fontWeight='700'
           lineHeight='100%'>
-          Complex Table
+          Testbuchungen von Energie Dock
         </Text>
         <Menu />
       </Flex>

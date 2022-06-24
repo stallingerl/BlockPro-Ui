@@ -18,19 +18,27 @@ export const columnsDataCheck = [
 ];
 export const columnsDataComplex = [
   {
-    Header: "NAME",
-    accessor: "name",
+    Header: "Trade ID",
+    accessor: "_id",
   },
   {
-    Header: "STATUS",
-    accessor: "status",
+    Header: "Booking ID",
+    accessor: "booking_id",
   },
   {
-    Header: "DATE",
-    accessor: "date",
+    Header: "Consumer",
+    accessor: "consumer",
   },
   {
-    Header: "PROGRESS",
-    accessor: "progress",
+    Header: "Producer",
+    accessor: "producer",
   },
+  {
+    Header: "IPFS Path",
+    accessor: "cid",
+  },
+  {
+    Header: "Doichain Hash",
+    accessor: "doi_hash",
+  }
 ];
