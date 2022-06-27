@@ -40,5 +40,9 @@ export const columnsDataComplex = [
   {
     Header: "Doichain Hash",
     accessor: "doi_hash",
-  }
+  },
+  {
+    Header: "Booked Energy",
+    accessor: "energy",
+  },
 ];

@@ -97,11 +97,21 @@ export default function ColumnsTable(props) {
             return (
               <Tr {...row.getRowProps()} key={index}>
                 {row.cells.map((cell, index) => {
-                  let data = (
-                    <Text color={textColor} fontSize='sm' fontWeight='700'>
-                      {cell.value}
-                    </Text>
-                  );
+                  let data = ""
+                  if (cell.column.Header !== "Energy in kwH") {
+                    data = (
+                      <Text color={textColor} fontSize='sm' fontWeight='700'>
+                        {cell.value}
+                      </Text>
+                    )
+                  } 
+                  else  {
+                    data = (
+                      <Text color={textColor} fontSize='sm' fontWeight='700'>
+                        {cell.value}
+                      </Text>
+                    )
+                  }
 
                   return (
                     <Td

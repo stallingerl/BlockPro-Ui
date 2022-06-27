@@ -30,6 +30,15 @@ export default function ColumnsTable(props) {
 
   const columns = useMemo(() => columnsData, [columnsData]);
   const data = tableData;
+  let dateOptions = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' };
+
+  function convertFromStringToDate(orbitDate) {
+    let date = new Date(orbitDate);
+    var userTimezoneOffset = date.getTimezoneOffset() * 60000;
+    var d = new Date(date.getTime() - userTimezoneOffset);
+    d = d.toLocaleString()
+    return d
+  }
 
   const tableInstance = useTable(
     {
@@ -57,9 +66,10 @@ export default function ColumnsTable(props) {
     <Card
       direction='column'
       w='100%'
-      px='0px'
-      overflowX={{ sm: "scroll", lg: "hidden" }}>
-      <Flex px='25px' justify='space-between' mb='10px' align='center'>
+      px='px'
+      overflowX={{ sm: "scroll" }}
+    >
+      <Flex px='25px' justify='space-between' mb='10px' align='center' >
         <Text
           color={textColor}
           fontSize='22px'
@@ -69,23 +79,25 @@ export default function ColumnsTable(props) {
         </Text>
         <Menu />
       </Flex>
-      <Table {...getTableProps()} variant='simple' color='gray.500' mb='24px'  w='100%'>
+      <Table {...getTableProps()} variant='simple' color='gray.500' mb='24px' w='100%' whiteSpace="nowrap">
         <Thead>
           {headerGroups.map((headerGroup, index) => (
-            <Tr {...headerGroup.getHeaderGroupProps()} key={index}>
+            <Tr {...headerGroup.getHeaderGroupProps()} key={index} >
               {headerGroup.headers.map((column, index) => (
                 <Th
                   {...column.getHeaderProps(column.getSortByToggleProps())}
                   pe='10px'
                   key={index}
                   borderColor={borderColor}
-                  w='100%'>
+                  w='100%'
+                >
                   <Flex
                     justify='space-between'
                     align='center'
                     fontSize={{ sm: "10px", lg: "12px" }}
                     color='gray.400'
-                    w='100%'>
+                    w='100%'
+                  >
                     {column.render("Header")}
                   </Flex>
                 </Th>
@@ -97,13 +109,40 @@ export default function ColumnsTable(props) {
           {page.map((row, index) => {
             prepareRow(row);
             return (
-              <Tr {...row.getRowProps()} key={index}  w='100%'>
+              <Tr {...row.getRowProps()} key={index} w='100%'  >
                 {row.cells.map((cell, index) => {
-                  let data = (
-                      <Text color={textColor} fontSize='sm' fontWeight='700' >
+                  let data = ""
+                  if (cell.column.Header !== "Booked Energy") {
+                    data = (
+                      <Text color={textColor} fontSize='sm' fontWeight='700'>
                         {cell.value}
-                      </Text>
-                  );
+                      </Text>)
+                  }
+                  else {
+                    {
+                      let tdata = ""
+                      cell.value.forEach((element) => {
+                        tdata = (
+                          <Tr color={textColor} fontSize='sm' fontWeight='700' p="-0.5">
+                            <Td>
+                              {convertFromStringToDate(element.date)}
+                            </Td>
+                            <Td>
+                              {element.energy_kwh} kwH
+                            </Td>
+                          </Tr>
+                        )
+                      })
+                      data = (
+                        <Table>
+                          <Tbody>
+                            {tdata}
+                          </Tbody>
+                        </Table>
+                      )
+                    }
+                  }
+
 
                   return (
                     <Td

@@ -7,8 +7,9 @@ import OrbitDB from 'orbit-db';
 import { s } from "./doichain/sharedState.js";
 import { createOrReadSeed } from "./doichain/createOrReadSeed.js";
 import { network, createNewWallet } from "doichainjs-lib"
-import ElectrumClient from "@codewarriorr/electrum-client-js"
 import bootstrapers from './config/bootstrapers.js'
+import { DEFAULT_NETWORK } from "doichainjs-lib/src/lib/network.js";
+import ElectrumClient from '@codewarriorr/electrum-client-js'
 
 
 async function main() {
@@ -51,7 +52,21 @@ async function main() {
   s.account = 0
   s.basePath = `${s.purpose}/${s.coinType}/${s.account}`
 
-  global.client = new ElectrumClient(process.env.ELECTRUM_CLIENT, 50002, "ssl");
+  var electrumHost
+
+  switch (process.env.DEFAULT_NETWORK) {
+    case "DOICHAIN":
+      electrumHost = "itchy-jellyfish-89.doi.works"
+      break;
+    case "DOICHAIN_TESTNET":
+      electrumHost = "spotty-goat-4.doi.works"
+      break;
+    case "DOICHAIN_REGTEST":
+      electrumHost = "172.22.0.6"
+      break;
+  }
+
+  global.client = new ElectrumClient(electrumHost, 50002, "ssl");
   try {
     await global.client.connect(
       "electrum-client-js", // optional client name

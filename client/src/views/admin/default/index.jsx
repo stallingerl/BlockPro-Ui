@@ -167,7 +167,7 @@ export default function UserReports() {
         />
       </SimpleGrid>
 
-      <SimpleGrid columns={{ base: 1, md: 2, xl: 2 }} gap='20px' mb='20px'>
+      <SimpleGrid columns={{ base: 1, md: 2, xl: 2 }} gap='20px' mb='20px' >
         <TotalSpent />
         <WeeklyRevenue />
       </SimpleGrid>
@@ -178,9 +178,9 @@ export default function UserReports() {
           <PieCard />
         </SimpleGrid>
       </SimpleGrid>
-      <SimpleGrid columns={{ base: 1, md: 1, xl: 2 }} gap='20px' mb='20px'>
+      <SimpleGrid columns={{ base: 1, md: 1, xl: 2 }} gap='20px' mb='20px' >
       {loading == false && (
-        <ComplexTable
+        <ComplexTable 
           columnsData={columnsDataComplex}
           tableData={tableDataComplex}
         />)}
