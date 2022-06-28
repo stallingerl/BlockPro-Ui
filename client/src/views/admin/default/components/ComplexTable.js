@@ -36,8 +36,31 @@ export default function ColumnsTable(props) {
     let date = new Date(orbitDate);
     var userTimezoneOffset = date.getTimezoneOffset() * 60000;
     var d = new Date(date.getTime() - userTimezoneOffset);
-    d = d.toLocaleString()
+    d = d.toLocaleString([], {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+    })
     return d
+  }
+
+  function createEnergyTable(cellData) {
+    return (
+      <Table size='sm' variant='striped' colorScheme='blackAlpha'>
+        <Tbody>
+          {cellData.map(item => {
+            return (
+              <Tr >
+                <Td>{convertFromStringToDate(item.date)}</Td>
+                <Td>{item.energy_kwh} kwH</Td>
+              </Tr>
+            );
+          })}
+        </Tbody>
+      </Table>
+    )
   }
 
   const tableInstance = useTable(
@@ -119,28 +142,7 @@ export default function ColumnsTable(props) {
                       </Text>)
                   }
                   else {
-                    {
-                      let tdata = ""
-                      cell.value.forEach((element) => {
-                        tdata = (
-                          <Tr color={textColor} fontSize='sm' fontWeight='700' p="-0.5">
-                            <Td>
-                              {convertFromStringToDate(element.date)}
-                            </Td>
-                            <Td>
-                              {element.energy_kwh} kwH
-                            </Td>
-                          </Tr>
-                        )
-                      })
-                      data = (
-                        <Table>
-                          <Tbody>
-                            {tdata}
-                          </Tbody>
-                        </Table>
-                      )
-                    }
+                    { data = createEnergyTable(cell.value) }
                   }
 
 
