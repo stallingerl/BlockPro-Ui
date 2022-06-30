@@ -4,7 +4,7 @@
   <img 
   src="./images/Dashboard.png"
   raw=true 
-  style="height:500px"
+  style="height:300px"
   />
 </p>
 
