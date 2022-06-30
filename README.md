@@ -2,7 +2,7 @@
 
 <p align="center">
   <img 
-  src="./images/OrbitDB.png"
+  src="./images/Dashboard.png"
   raw=true 
   style="height:200px"
   />

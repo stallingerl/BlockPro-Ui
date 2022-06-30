@@ -37,6 +37,7 @@ app.get("/admin/default", async (req, res) => {
 
     var myMfas = await docstore.query((e) => e._id.length > 0)
     console.log("My Mfas", myMfas)
+    myMfas.push({"balance":s.wallet.balance})
     res.json(myMfas)
     console.log("sent response")
 

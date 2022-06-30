@@ -32,7 +32,7 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 // Assets
-import Usa from "assets/img/dashboards/usa.png";
+import Usa from "assets/img/dashboards/doi100.png";
 // Custom components
 import MiniCalendar from "components/calendar/MiniCalendar";
 import MiniStatistics from "components/card/MiniStatistics";
@@ -64,6 +64,7 @@ export default function UserReports() {
 
   const [loading, setLoading] = useState(true);
   const [energyData, setEnergyData] = useState([])
+  const [doiBalance, setDoiBalance] = useState([])
 
   const [tableDataComplex, setData] = useState([]);
 
@@ -74,8 +75,13 @@ export default function UserReports() {
         .then((json) => {
           var readEnergyData = []
           for (let i = 0; i < json.length; i++) {
-            for (let j = 0; j < json[i].energy.length; j++) {
-              readEnergyData.push(json[i].energy[j])
+            if (json[i].balance == undefined) {
+              for (let j = 0; j < json[i].energy.length; j++) {
+                readEnergyData.push(json[i].energy[j])
+              }
+            } else {
+              setDoiBalance(json[i].balance)
+              json.splice(i, 1)
             }
           }
           setEnergyData(readEnergyData)
@@ -159,8 +165,8 @@ export default function UserReports() {
                 </Select>
               </Flex>
             }
-            name='Your balance'
-            value='$1,000'
+            name='Your DoiWallet balance'
+            value={doiBalance}
           />
           <MiniStatistics
             startContent={
@@ -190,7 +196,10 @@ export default function UserReports() {
           />
         </SimpleGrid>
         <SimpleGrid columns={{ base: 1, md: 2, xl: 2 }} gap='20px' mb='20px' >
-          <TotalSpent />
+          <ComplexTable
+            columnsData={columnsDataComplex}
+            tableData={tableDataComplex}
+          />
           <WeeklyRevenue data={energyData} />
         </SimpleGrid>
         <SimpleGrid columns={{ base: 1, md: 1, xl: 2 }} gap='20px' mb='20px'>
@@ -201,10 +210,7 @@ export default function UserReports() {
           </SimpleGrid>
         </SimpleGrid>
         <SimpleGrid columns={{ base: 1, md: 1, xl: 2 }} gap='20px' mb='20px' >
-          <ComplexTable
-            columnsData={columnsDataComplex}
-            tableData={tableDataComplex}
-          />
+        <TotalSpent />
           <SimpleGrid columns={{ base: 1, md: 2, xl: 2 }} gap='20px'>
             <Tasks />
             <MiniCalendar h='100%' minW='100%' selectRange={false} />
