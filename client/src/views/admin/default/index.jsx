@@ -63,6 +63,7 @@ import tableDataCheck from "views/admin/default/variables/tableDataCheck.json";
 export default function UserReports() {
 
   const [loading, setLoading] = useState(true);
+  const [energyData, setEnergyData] = useState([])
 
   const [tableDataComplex, setData] = useState([]);
 
@@ -71,6 +72,13 @@ export default function UserReports() {
       fetch("/admin/default")
         .then((res) => res.json())
         .then((json) => {
+          var readEnergyData = []
+          for (let i = 0; i < json.length; i++) {
+            for (let j = 0; j < json[i].energy.length; j++) {
+              readEnergyData.push(json[i].energy[j])
+            }
+          }
+          setEnergyData(readEnergyData)
           setLoading(false);
           setData(json);
           console.log("result ", json)
@@ -82,14 +90,8 @@ export default function UserReports() {
     })();
   }, []);
 
-  function calculateTotalEnergy(data) {
-    let energyData = []
-    for (let i = 0; i < data.length; i++) {
-      for (let j = 0; j < data[i].energy.length; j++) {
-        energyData.push(data[i].energy[j])
-      }
-    }
-    let totalElectricityAmount = 0 
+  function calculateTotalEnergy(energyData) {
+    let totalElectricityAmount = 0
     for (let i = 0; i < energyData.length; i++) {
       totalElectricityAmount += energyData[i].energy_kwh
     }
@@ -100,9 +102,12 @@ export default function UserReports() {
   // Chakra Color Mode
   const brandColor = useColorModeValue("brand.500", "white");
   const boxBg = useColorModeValue("secondaryGray.300", "whiteAlpha.100");
-  return (
-    <Box pt={{ base: "130px", md: "80px", xl: "80px" }}>
-      {loading == false && (
+
+  if (loading) {
+    return null
+  } else {
+    return (
+      <Box pt={{ base: "130px", md: "80px", xl: "80px" }}>
         <SimpleGrid
           columns={{ base: 1, md: 2, lg: 3, "2xl": 6 }}
           gap='20px'
@@ -167,7 +172,7 @@ export default function UserReports() {
               />
             }
             name='Total Booked Electricity'
-            value={calculateTotalEnergy(tableDataComplex)}
+            value={calculateTotalEnergy(energyData)}
           />
           <MiniStatistics
             startContent={
@@ -184,29 +189,28 @@ export default function UserReports() {
             value={tableDataComplex.length}
           />
         </SimpleGrid>
-      )}
-      <SimpleGrid columns={{ base: 1, md: 2, xl: 2 }} gap='20px' mb='20px' >
-        <TotalSpent />
-        <WeeklyRevenue />
-      </SimpleGrid>
-      <SimpleGrid columns={{ base: 1, md: 1, xl: 2 }} gap='20px' mb='20px'>
-        <CheckTable columnsData={columnsDataCheck} tableData={tableDataCheck} />
-        <SimpleGrid columns={{ base: 1, md: 2, xl: 2 }} gap='20px'>
-          <DailyTraffic />
-          <PieCard />
+        <SimpleGrid columns={{ base: 1, md: 2, xl: 2 }} gap='20px' mb='20px' >
+          <TotalSpent />
+          <WeeklyRevenue data={energyData} />
         </SimpleGrid>
-      </SimpleGrid>
-      <SimpleGrid columns={{ base: 1, md: 1, xl: 2 }} gap='20px' mb='20px' >
-        {loading == false && (
+        <SimpleGrid columns={{ base: 1, md: 1, xl: 2 }} gap='20px' mb='20px'>
+          <CheckTable columnsData={columnsDataCheck} tableData={tableDataCheck} />
+          <SimpleGrid columns={{ base: 1, md: 2, xl: 2 }} gap='20px'>
+            <DailyTraffic />
+            <PieCard />
+          </SimpleGrid>
+        </SimpleGrid>
+        <SimpleGrid columns={{ base: 1, md: 1, xl: 2 }} gap='20px' mb='20px' >
           <ComplexTable
             columnsData={columnsDataComplex}
             tableData={tableDataComplex}
-          />)}
-        <SimpleGrid columns={{ base: 1, md: 2, xl: 2 }} gap='20px'>
-          <Tasks />
-          <MiniCalendar h='100%' minW='100%' selectRange={false} />
+          />
+          <SimpleGrid columns={{ base: 1, md: 2, xl: 2 }} gap='20px'>
+            <Tasks />
+            <MiniCalendar h='100%' minW='100%' selectRange={false} />
+          </SimpleGrid>
         </SimpleGrid>
-      </SimpleGrid>
-    </Box>
-  );
+      </Box>
+    );
+  }
 }

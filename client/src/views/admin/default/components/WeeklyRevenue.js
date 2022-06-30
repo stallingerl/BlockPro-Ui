@@ -10,15 +10,73 @@ import {
 import Card from "components/card/Card.js";
 // Custom components
 import BarChart from "components/charts/BarChart";
-import React from "react";
+import React, { useMemo } from "react";
 import {
-  barChartDataConsumption,
   barChartOptionsConsumption,
 } from "variables/charts";
 import { MdBarChart } from "react-icons/md";
 
 export default function WeeklyRevenue(props) {
   const { ...rest } = props;
+  var energyData = props.data
+
+  energyData.sort(function(a,b){
+    // Turn your strings into dates, and then subtract them
+    // to get a value that is either negative, positive, or zero.
+    return new Date(a.date) - new Date(b.date);
+  });
+
+  var kwh_data = []
+  let barChartOptions = barChartOptionsConsumption
+
+  for (let i = 0; i < energyData.length; i++) {
+    let date = new Date(energyData[i].date);
+    let d = date.toLocaleString([], {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    })
+    energyData[i].date = d
+    if (barChartOptions.xaxis.categories.indexOf(d) == -1) {
+      barChartOptions.xaxis.categories.push(d)
+    }
+
+    kwh_data.push(energyData[i].energy_kwh)
+
+  }
+
+  const myBarChartOptions = useMemo(() => barChartOptions);
+
+  var dict = Object.create(null); // create an empty object
+
+  var groupedByDate = energyData.reduce(function (arr, o) {
+    var current = dict[o.date]; // get the object from dict
+
+    if (!current) { // if dict doesn't contain object
+      current = Object.assign({}, o); // create a clone of the object - this prevents changing the original object
+
+      arr.push(current); // push it to the array
+
+      dict[o.date] = current; // add it to dict
+    } else { // if dict contains the object
+      current.energy_kwh += o.energy_kwh; // update the sum
+    }
+
+    return arr;
+  }, []);
+
+  console.log(groupedByDate);
+
+  let groupedData = []
+
+  groupedByDate.forEach((date) => {
+    groupedData.push(date.energy_kwh)
+  })
+
+  let options = []
+  options.push( {name: "kwH", data: groupedData })
+
+  const myBarChartData = useMemo(() => options);
 
   // Chakra Color Mode
   const textColor = useColorModeValue("secondaryGray.900", "white");
@@ -41,7 +99,7 @@ export default function WeeklyRevenue(props) {
           fontSize='xl'
           fontWeight='700'
           lineHeight='100%'>
-          Weekly Revenue
+          Daily Booked Electricity in kwH
         </Text>
         <Button
           align='center'
@@ -61,8 +119,8 @@ export default function WeeklyRevenue(props) {
 
       <Box h='240px' mt='auto'>
         <BarChart
-          chartData={barChartDataConsumption}
-          chartOptions={barChartOptionsConsumption}
+          chartData={myBarChartData}
+          chartOptions={myBarChartOptions}
         />
       </Box>
     </Card>
