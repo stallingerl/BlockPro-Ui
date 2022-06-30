@@ -12,6 +12,7 @@ import sha256 from 'sha256'
 import { s } from "./doichain/sharedState.js"
 import { createAndSendTransaction } from "doichainjs-lib"
 import AES from 'crypto-js/aes.js'
+import cors from 'cors';
 const password = process.env.PASSWORD
 
 
@@ -26,6 +27,13 @@ import { User } from "./model/user.js";
 //app.use(express.static(path.resolve(__dirname, '../client/build')));
 let x = path.join(__dirname, "./client/build")
 app.use(express.static(path.join(__dirname, "./client/build")))
+
+const corsOptions ={
+    origin:'http://localhost:3000', 
+    credentials:true,            //access-control-allow-credentials:true
+    optionSuccessStatus:200
+}
+app.use(cors(corsOptions));
 
 let y = path.join(__dirname, "./client/build/index.html")
 

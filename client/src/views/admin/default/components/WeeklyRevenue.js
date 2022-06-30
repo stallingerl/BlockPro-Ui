@@ -45,7 +45,7 @@ export default function WeeklyRevenue(props) {
 
   }
 
-  const myBarChartOptions = useMemo(() => barChartOptions);
+  const myBarChartOptions = barChartOptions;
 
   var dict = Object.create(null); // create an empty object
 

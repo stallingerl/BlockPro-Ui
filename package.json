@@ -24,6 +24,7 @@
     "bcrypt": "^5.0.1",
     "bcryptjs": "^2.4.3",
     "bitcoinjs-lib": "^6.0.1",
+    "cors": "^2.8.5",
     "crypto-js": "^4.1.1",
     "doichainjs-lib": "^2.2.4",
     "dotenv": "^16.0.1",

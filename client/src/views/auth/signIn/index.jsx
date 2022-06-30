@@ -21,8 +21,10 @@
 
 */
 
-import React from "react";
+import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
+import axios from 'axios';
+import { useHistory } from "react-router-dom"
 // Chakra imports
 import {
   Box,
@@ -65,8 +67,93 @@ function SignIn() {
     { bg: "secondaryGray.300" },
     { bg: "whiteAlpha.200" }
   );
+
   const [show, setShow] = React.useState(false);
   const handleClick = () => setShow(!show);
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  // States for checking the errors
+  const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState(false);
+
+  // Handling the email change
+  const handleEmail = (e) => {
+    setEmail(e.target.value);
+    setSubmitted(false);
+  };
+
+  // Handling the password change
+  const handlePassword = (e) => {
+    setPassword(e.target.value);
+    setSubmitted(false);
+  };
+
+
+  // Handling the form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (email === '' || password === '') {
+      setError(true);
+    } else {
+      let resStatus = await login()
+    }
+  };
+
+
+  // Showing success message
+  const successMessage = () => {
+    return (
+      <div
+        className="success"
+        style={{
+          display: submitted ? '' : 'none',
+        }}>
+        <h1>User {email} successfully registered!!</h1>
+      </div>
+    );
+  };
+
+  // Showing error message if error is true
+  const errorMessage = () => {
+    return (
+      <div
+        className="error"
+        style={{
+          display: error ? '' : 'none',
+        }}>
+        <h1>Please enter all the fields</h1>
+      </div>
+    );
+  };
+
+  const headers = {
+    'Content-Type': 'application/json',
+    "Access-Control-Allow-Origin": "*"
+  };
+
+  const login = async () => {
+    await axios.post("http://localhost:3001/login", 
+    {email: email, 
+     password: password
+    }, 
+    {headers}
+    )
+      .then(res => {
+        if (res.status == 200) {
+          alert("Successfully Logged In")
+          setSubmitted(true);
+          setError(false);
+        } else {
+          alert("Invalid Credentials")
+          setError(true)
+        }
+      })
+  }
+
+
+
   return (
     <DefaultAuth illustrationBackground={illustration} image={illustration}>
       <Flex
@@ -138,6 +225,8 @@ function SignIn() {
               Email<Text color={brandStars}>*</Text>
             </FormLabel>
             <Input
+              onChange={handleEmail}
+              value={email}
               isRequired={true}
               variant='auth'
               fontSize='sm'
@@ -158,6 +247,8 @@ function SignIn() {
             </FormLabel>
             <InputGroup size='md'>
               <Input
+                onChange={handlePassword}
+                value={password}
                 isRequired={true}
                 fontSize='sm'
                 placeholder='Min. 8 characters'
@@ -202,6 +293,7 @@ function SignIn() {
               </NavLink>
             </Flex>
             <Button
+              onClick={handleSubmit}
               fontSize='sm'
               variant='brand'
               fontWeight='500'
