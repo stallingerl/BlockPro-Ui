@@ -117,7 +117,7 @@ export default function WeeklyRevenue(props) {
         </Button>
       </Flex>
 
-      <Box h='240px' mt='auto'>
+      <Box h='100%' mt='auto'>
         <BarChart
           chartData={myBarChartData}
           chartOptions={myBarChartOptions}

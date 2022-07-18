@@ -58,10 +58,14 @@ import {
   columnsDataComplex,
 } from "views/admin/default/variables/columnsData";
 import tableDataCheck from "views/admin/default/variables/tableDataCheck.json";
+import PropTypes from 'prop-types';
+import jwt_decode from 'jwt-decode'
+import { useHistory } from 'react-router-dom'
 
 
 export default function UserReports() {
 
+  const history = useHistory()
   const [loading, setLoading] = useState(true);
   const [energyData, setEnergyData] = useState([])
   const [doiBalance, setDoiBalance] = useState([])
@@ -69,31 +73,42 @@ export default function UserReports() {
   const [tableDataComplex, setData] = useState([]);
 
   useEffect(() => {
-    (async () => {
-      fetch("/admin/default")
-        .then((res) => res.json())
-        .then((json) => {
-          var readEnergyData = []
-          for (let i = 0; i < json.length; i++) {
-            if (json[i].balance == undefined) {
-              for (let j = 0; j < json[i].energy.length; j++) {
-                readEnergyData.push(json[i].energy[j])
+    const token = localStorage.getItem('token')
+    if (token) {
+      const user = jwt_decode(token)
+      if (!user) {
+        localStorage.removeItem('token')
+        history.push('/auth')
+      } else {
+        (async () => {
+          fetch("/admin/default",{ headers: {
+            'x-access-token': localStorage.getItem('token'),
+          },})
+            .then((res) => res.json())
+            .then((json) => {
+              var readEnergyData = []
+              for (let i = 0; i < json.length; i++) {
+                if (json[i].balance == undefined) {
+                  for (let j = 0; j < json[i].energy.length; j++) {
+                    readEnergyData.push(json[i].energy[j])
+                  }
+                } else {
+                  setDoiBalance(json[i].balance)
+                  json.splice(i, 1)
+                }
               }
-            } else {
-              setDoiBalance(json[i].balance)
-              json.splice(i, 1)
-            }
-          }
-          setEnergyData(readEnergyData)
-          setLoading(false);
-          setData(json);
-          console.log("result ", json)
-        })
-        .catch(error => {
-          setLoading(false);
-          console.log(error)
-        })
-    })();
+              setEnergyData(readEnergyData)
+              setLoading(false);
+              setData(json);
+              console.log("result ", json)
+            })
+            .catch(error => {
+              setLoading(false);
+              console.log(error)
+            })
+        })();
+      }
+    }
   }, []);
 
   function calculateTotalEnergy(energyData) {
@@ -210,7 +225,7 @@ export default function UserReports() {
           </SimpleGrid>
         </SimpleGrid>
         <SimpleGrid columns={{ base: 1, md: 1, xl: 2 }} gap='20px' mb='20px' >
-        <TotalSpent />
+          <TotalSpent />
           <SimpleGrid columns={{ base: 1, md: 2, xl: 2 }} gap='20px'>
             <Tasks />
             <MiniCalendar h='100%' minW='100%' selectRange={false} />
@@ -220,3 +235,12 @@ export default function UserReports() {
     );
   }
 }
+
+UserReports.propTypes = {
+  logoutUser: PropTypes.func.isRequired,
+  auth: PropTypes.object.isRequired
+};
+
+const mapStateToProps = state => ({
+  auth: state.auth
+});

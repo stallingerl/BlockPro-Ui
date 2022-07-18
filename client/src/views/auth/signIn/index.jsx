@@ -1,30 +1,5 @@
-/* eslint-disable */
-/*!
-  _   _  ___  ____  ___ ________  _   _   _   _ ___   
- | | | |/ _ \|  _ \|_ _|__  / _ \| \ | | | | | |_ _| 
- | |_| | | | | |_) || |  / / | | |  \| | | | | || | 
- |  _  | |_| |  _ < | | / /| |_| | |\  | | |_| || |
- |_| |_|\___/|_| \_\___/____\___/|_| \_|  \___/|___|
-                                                                                                                                                                                                                                                                                                                                       
-=========================================================
-* Horizon UI - v1.1.0
-=========================================================
-
-* Product Page: https://www.horizon-ui.com/
-* Copyright 2022 Horizon UI (https://www.horizon-ui.com/)
-
-* Designed and Coded by Simmmple
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
-
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
-import axios from 'axios';
-import { useHistory } from "react-router-dom"
 // Chakra imports
 import {
   Box,
@@ -49,6 +24,7 @@ import illustration from "assets/img/auth/auth.png";
 import { FcGoogle } from "react-icons/fc";
 import { MdOutlineRemoveRedEye } from "react-icons/md";
 import { RiEyeCloseLine } from "react-icons/ri";
+import { useHistory } from 'react-router-dom'
 
 function SignIn() {
   // Chakra color mode
@@ -68,89 +44,41 @@ function SignIn() {
     { bg: "whiteAlpha.200" }
   );
 
+  const history = useHistory()
+
   const [show, setShow] = React.useState(false);
   const handleClick = () => setShow(!show);
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('')
+	const [password, setPassword] = useState('')
 
-  // States for checking the errors
-  const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState(false);
+	async function loginUser(event) {
+    if (email && password){
+		event.preventDefault()
 
-  // Handling the email change
-  const handleEmail = (e) => {
-    setEmail(e.target.value);
-    setSubmitted(false);
-  };
+		const response = await fetch('/login', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				email,
+				password,
+			})
+		})
 
-  // Handling the password change
-  const handlePassword = (e) => {
-    setPassword(e.target.value);
-    setSubmitted(false);
-  };
+		const data = await response.json()
 
-
-  // Handling the form submission
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (email === '' || password === '') {
-      setError(true);
-    } else {
-      let resStatus = await login()
-    }
-  };
-
-
-  // Showing success message
-  const successMessage = () => {
-    return (
-      <div
-        className="success"
-        style={{
-          display: submitted ? '' : 'none',
-        }}>
-        <h1>User {email} successfully registered!!</h1>
-      </div>
-    );
-  };
-
-  // Showing error message if error is true
-  const errorMessage = () => {
-    return (
-      <div
-        className="error"
-        style={{
-          display: error ? '' : 'none',
-        }}>
-        <h1>Please enter all the fields</h1>
-      </div>
-    );
-  };
-
-  const headers = {
-    'Content-Type': 'application/json',
-    "Access-Control-Allow-Origin": "*"
-  };
-
-  const login = async () => {
-    await axios.post("http://localhost:3001/login", 
-    {email: email, 
-     password: password
-    }, 
-    {headers}
-    )
-      .then(res => {
-        if (res.status == 200) {
-          alert("Successfully Logged In")
-          setSubmitted(true);
-          setError(false);
-        } else {
-          alert("Invalid Credentials")
-          setError(true)
-        }
-      })
+		if (data && data !== "Invalid Credentials") {
+			localStorage.setItem('token', data)
+			history.push('/admin')
+		} else {
+			alert('Please check your username and password')
+		}
+  }else{
+    alert("Please add username and password")
   }
+	}
 
 
 
@@ -225,14 +153,14 @@ function SignIn() {
               Email<Text color={brandStars}>*</Text>
             </FormLabel>
             <Input
-              onChange={handleEmail}
-              value={email}
               isRequired={true}
               variant='auth'
               fontSize='sm'
               ms={{ base: "0px", md: "0px" }}
               type='email'
-              placeholder='mail@simmmple.com'
+              placeholder='mail@gmail.com'
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               mb='24px'
               fontWeight='500'
               size='lg'
@@ -247,13 +175,13 @@ function SignIn() {
             </FormLabel>
             <InputGroup size='md'>
               <Input
-                onChange={handlePassword}
-                value={password}
                 isRequired={true}
                 fontSize='sm'
-                placeholder='Min. 8 characters'
+                placeholder='password'
                 mb='24px'
                 size='lg'
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 type={show ? "text" : "password"}
                 variant='auth'
               />
@@ -293,13 +221,13 @@ function SignIn() {
               </NavLink>
             </Flex>
             <Button
-              onClick={handleSubmit}
               fontSize='sm'
               variant='brand'
               fontWeight='500'
               w='100%'
               h='50'
-              mb='24px'>
+              mb='24px'
+              onClick={loginUser}>
               Sign In
             </Button>
           </FormControl>
@@ -328,4 +256,4 @@ function SignIn() {
   );
 }
 
-export default SignIn;
+export default SignIn

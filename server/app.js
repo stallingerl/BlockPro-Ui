@@ -39,19 +39,7 @@ let y = path.join(__dirname, "./client/build/index.html")
 
 app.get(favicon(path.join(__dirname, './client/public', 'favicon.ico')))
 
-app.get("/admin/default", async (req, res) => {
-
-    var docstore = app.get('docstore')
-
-    var myMfas = await docstore.query((e) => e._id.length > 0)
-    console.log("My Mfas", myMfas)
-    myMfas.push({"balance":s.wallet.balance})
-    res.json(myMfas)
-    console.log("sent response")
-
-});
-
-app.post("/trade", async (req, res) => {
+app.post("/trade", auth, async (req, res) => {
     var docstore = app.get('docstore')
     var ipfs = app.get('ipfs')
 
@@ -125,6 +113,18 @@ app.post("/trade", async (req, res) => {
         console.log(err);
     }
 })
+
+app.get("/admin/default", auth, async (req, res) => {
+
+    var docstore = app.get('docstore')
+
+    var myMfas = await docstore.query((e) => e._id.length > 0)
+    console.log("My Mfas", myMfas)
+    myMfas.push({"balance":s.wallet.balance})
+    res.json(myMfas)
+    console.log("sent response")
+
+});
 
 // Register
 app.post("/register", async (req, res) => {
@@ -206,9 +206,9 @@ app.post("/login", async (req, res) => {
             // save user token
             user.token =  token
 
-            res.status(200).send(token);
+            res.status(200).json(token);
         } else {
-            res.status(400).send("Invalid Credentials");
+            res.status(400).json("Invalid Credentials");
         }
     } catch (err) {
         console.log(err);

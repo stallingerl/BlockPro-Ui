@@ -89,8 +89,10 @@ export default function ColumnsTable(props) {
     <Card
       direction='column'
       w='100%'
+      h='400px'
       px='px'
       overflowX={{ sm: "scroll" }}
+      overflowY={{ sm: "scroll" }}
     >
       <Flex px='25px' justify='space-between' mb='10px' align='center' >
         <Text
