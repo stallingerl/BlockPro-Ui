@@ -68,6 +68,7 @@ export default function UserReports() {
   const history = useHistory()
   const [loading, setLoading] = useState(true);
   const [energyData, setEnergyData] = useState([])
+  const [meterData, setMeterData] = useState([])
   const [doiBalance, setDoiBalance] = useState([])
 
   const [tableDataComplex, setData] = useState([]);
@@ -86,20 +87,33 @@ export default function UserReports() {
           },})
             .then((res) => res.json())
             .then((json) => {
+              var meterData = []
               var readEnergyData = []
               for (let i = 0; i < json.length; i++) {
-                if (json[i].balance == undefined) {
+                if (json[i].booking_id !== undefined) {
                   for (let j = 0; j < json[i].energy.length; j++) {
                     readEnergyData.push(json[i].energy[j])
                   }
-                } else {
+                }
+                if (json[i].balance !== undefined) {
                   setDoiBalance(json[i].balance)
-                  json.splice(i, 1)
+                  //json.splice(i, 1)
+                }
+
+                if (json[i].meterId !== undefined){
+                  let date = new Date(json[i].timestamp)
+                  meterData.push({
+                    date: date,
+                    total_produced: json[i].total_produced,
+                    total_consumed: json[i].total_consumed
+                  })
                 }
               }
+
               setEnergyData(readEnergyData)
+              setMeterData(meterData)
+              setData(energyData);
               setLoading(false);
-              setData(json);
               console.log("result ", json)
             })
             .catch(error => {
@@ -211,24 +225,20 @@ export default function UserReports() {
           />
         </SimpleGrid>
         <SimpleGrid columns={{ base: 1, md: 2, xl: 2 }} gap='20px' mb='20px' >
-          <ComplexTable
-            columnsData={columnsDataComplex}
-            tableData={tableDataComplex}
-          />
-          <WeeklyRevenue data={energyData} />
+          <WeeklyRevenue data={meterData} />
+          <TotalSpent />
         </SimpleGrid>
-        <SimpleGrid columns={{ base: 1, md: 1, xl: 2 }} gap='20px' mb='20px'>
+        <SimpleGrid columns={{ base: 1, md: 1, xl: 2 }} gap='40px' mb='40px'>
           <CheckTable columnsData={columnsDataCheck} tableData={tableDataCheck} />
           <SimpleGrid columns={{ base: 1, md: 2, xl: 2 }} gap='20px'>
-            <DailyTraffic />
             <PieCard />
+            <MiniCalendar h='100%' minW='100%' selectRange={false} />
           </SimpleGrid>
         </SimpleGrid>
         <SimpleGrid columns={{ base: 1, md: 1, xl: 2 }} gap='20px' mb='20px' >
-          <TotalSpent />
           <SimpleGrid columns={{ base: 1, md: 2, xl: 2 }} gap='20px'>
             <Tasks />
-            <MiniCalendar h='100%' minW='100%' selectRange={false} />
+            <DailyTraffic />
           </SimpleGrid>
         </SimpleGrid>
       </Box>

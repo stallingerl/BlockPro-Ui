@@ -23,8 +23,8 @@ async function main() {
   s.id = id.id
 
   http.createServer(app).listen(HTTP_PORT);
-  console.log("Server listening at: https://interface.blockpro.energy" )
- 
+  console.log("Server listening at: https://dashboard.blockpro.energy")
+
 
   // To Do create ElectrumX connection to store Data in Doichain
   global.DEFAULT_NETWORK = network[process.env.DEFAULT_NETWORK]
@@ -94,7 +94,7 @@ async function main() {
   const peers = await ipfs.swarm.peers()
   console.log(`The node now has ${peers.length} peers.`)
 
-  peers.forEach((connection)=>console.log(connection.peer)) 
+  peers.forEach((connection) => console.log(connection.peer))
 
   // Create IPFS instance
   //const ipfs = await IPFS.create();
@@ -104,24 +104,25 @@ async function main() {
 
   // Create docstore DB
   // const address = '/orbitdb/zdpuArV8iyuGAanQs37r61HnREMExY9KnBmp2ZcxGj5iecsxo/docstoreDB'
-  const docstore = await orbitDb.docstore("docstoreDB");
+  // Create docstore DB
+  var docstore = await orbitDb.open('/orbitdb/zdpuAo5b8Lv3x4MrF5kZf2aemgdqiMXsb8Mf9pKws9voHsZgb/docstoreDB');
   console.log("Successfully created docstore");
 
-  console.log("address docstore ", docstore.address)
-
   await docstore.load()
+
+  await docstore.events.on('replicated', async (address) => {
+    console.log("Replicated Database")
+  })
 
   console.log(ipfs.isOnline())
   console.log(await ipfs.bootstrap.list())
 
-  await docstore.events.on('replicated', () => console.log("Replicated Db"))
-
   app.set('docstore', docstore)
   app.set('ipfs', ipfs)
 
- /* setInterval(async () => {
-    console.log(`The node now has ${peers.length} peers.`)
-  }, 5000)*/
+  /* setInterval(async () => {
+     console.log(`The node now has ${peers.length} peers.`)
+   }, 5000)*/
 }
 
 main()

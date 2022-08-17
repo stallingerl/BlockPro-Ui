@@ -28,10 +28,10 @@ import { User } from "./model/user.js";
 let x = path.join(__dirname, "./client/build")
 app.use(express.static(path.join(__dirname, "./client/build")))
 
-const corsOptions ={
-    origin:'http://localhost:3000', 
-    credentials:true,            //access-control-allow-credentials:true
-    optionSuccessStatus:200
+const corsOptions = {
+    origin: 'http://localhost:3000',
+    credentials: true,            //access-control-allow-credentials:true
+    optionSuccessStatus: 200
 }
 app.use(cors(corsOptions));
 
@@ -63,25 +63,25 @@ app.post("/trade", auth, async (req, res) => {
             // return ok
             res.status(200).send(mfa_id)
         } else {
-            
+
             let stringMfa = JSON.stringify({ producer, consumer, energy, booking_id, mfa_id })
             console.log("string mfa: ", stringMfa)
             // Save Mfa to IPFS
             var cid = await ipfs.add(stringMfa)
             cid = cid.path
             await ipfs.pin.add(cid, true)
-    
+
             let hash = sha256(stringMfa)
-    
+
             // Save Mfa and Cid to Doichain
             let nameId = cid
             let nameValue = hash
             let amount
             let decryptedSeedPhrase = s.seed
             let destAddress = s.wallet.addresses[0].address
-    
+
             let our_wallet = s.wallet
-    
+
             // Check if there are still enough Doi in the wallet for the name tx
             //await checkBalance(global.url);
             const txResponse = await createAndSendTransaction(decryptedSeedPhrase,
@@ -118,10 +118,24 @@ app.get("/admin/default", auth, async (req, res) => {
 
     var docstore = app.get('docstore')
 
-    var myMfas = await docstore.query((e) => e._id.length > 0)
-    console.log("My Mfas", myMfas)
-    myMfas.push({"balance":s.wallet.balance})
-    res.json(myMfas)
+    var myData = []
+   
+    await docstore.query((e) => {
+        if (e.meterId !== undefined) {
+            let decryptedHex =  AES.decrypt(e.meterId, "NeverGuessing").toString();
+            let decrypted = new Buffer(decryptedHex,"hex").toString()
+            if ( decrypted == "0819"){
+                myData.push(e)
+            }
+        }
+
+        if (e.booking_id !== undefined){
+            myData.push(e)
+        }
+    })
+    console.log("My Mfas", myData)
+    myData.push({ "balance": s.wallet.balance })
+    res.json(myData)
     console.log("sent response")
 
 });
@@ -204,9 +218,9 @@ app.post("/login", async (req, res) => {
             );
 
             // save user token
-            user.token =  token
+            user.token = token
 
-            res.status(200).json(token);
+            res.status(200).json({ "user": user, "token": token });
         } else {
             res.status(400).json("Invalid Credentials");
         }

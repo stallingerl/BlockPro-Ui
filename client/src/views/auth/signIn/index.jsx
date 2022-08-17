@@ -69,8 +69,8 @@ function SignIn() {
 
 		const data = await response.json()
 
-		if (data && data !== "Invalid Credentials") {
-			localStorage.setItem('token', data)
+		if (data && response.status == 200) {
+			localStorage.setItem('token', data.token)
 			history.push('/admin')
 		} else {
 			alert('Please check your username and password')

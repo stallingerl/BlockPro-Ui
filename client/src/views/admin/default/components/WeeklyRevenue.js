@@ -20,11 +20,23 @@ export default function WeeklyRevenue(props) {
   const { ...rest } = props;
   var energyData = props.data
 
+  // sort meterData by timestamp
   energyData.sort(function(a,b){
     // Turn your strings into dates, and then subtract them
     // to get a value that is either negative, positive, or zero.
     return new Date(a.date) - new Date(b.date);
   });
+
+  for (let i= 0; i < energyData.length; i++) {
+    if (i==0){
+      energyData[i].sum_produced = 0 
+      energyData[i].sum_consumed = 0
+    }else{
+      // add sum of produced and consumed to object
+      energyData[i].sum_produced = energyData[i].total_produced - energyData[i-1].total_produced
+      energyData[i].sum_consumed = energyData[i].total_consumed - energyData[i-1].total_consumed
+    }
+  }
 
   var kwh_data = []
   let barChartOptions = barChartOptionsConsumption
@@ -41,7 +53,7 @@ export default function WeeklyRevenue(props) {
       barChartOptions.xaxis.categories.push(d)
     }
 
-    kwh_data.push(energyData[i].energy_kwh)
+    kwh_data.push(energyData[i].sum_produced)
 
   }
 
@@ -59,7 +71,7 @@ export default function WeeklyRevenue(props) {
 
       dict[o.date] = current; // add it to dict
     } else { // if dict contains the object
-      current.energy_kwh += o.energy_kwh; // update the sum
+      current.sum_produced += o.sum_produced; // update the sum
     }
 
     return arr;
@@ -70,7 +82,8 @@ export default function WeeklyRevenue(props) {
   let groupedData = []
 
   groupedByDate.forEach((date) => {
-    groupedData.push(date.energy_kwh)
+    if (date.sum_produced < 100)
+    groupedData.push(Math.round(date.sum_produced))
   })
 
   let options = []
@@ -99,7 +112,7 @@ export default function WeeklyRevenue(props) {
           fontSize='xl'
           fontWeight='700'
           lineHeight='100%'>
-          Daily Booked Electricity in kwH
+          Daily Produced Electricity in kwH
         </Text>
         <Button
           align='center'
@@ -117,7 +130,7 @@ export default function WeeklyRevenue(props) {
         </Button>
       </Flex>
 
-      <Box h='100%' mt='auto'>
+      <Box h='100%' mt='auto' overflowX={{ sm: "hidden"}}>
         <BarChart
           chartData={myBarChartData}
           chartOptions={myBarChartOptions}
