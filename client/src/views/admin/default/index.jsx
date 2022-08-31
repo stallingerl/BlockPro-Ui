@@ -61,6 +61,7 @@ import tableDataCheck from "views/admin/default/variables/tableDataCheck.json";
 import PropTypes from 'prop-types';
 import jwt_decode from 'jwt-decode'
 import { useHistory } from 'react-router-dom'
+import TotalConsumed from "./components/TotalConsumed";
 
 
 export default function UserReports() {
@@ -89,8 +90,10 @@ export default function UserReports() {
             .then((json) => {
               var meterData = []
               var readEnergyData = []
+              var bookingData = []
               for (let i = 0; i < json.length; i++) {
                 if (json[i].booking_id !== undefined) {
+                  bookingData.push(json[i])
                   for (let j = 0; j < json[i].energy.length; j++) {
                     readEnergyData.push(json[i].energy[j])
                   }
@@ -112,7 +115,7 @@ export default function UserReports() {
 
               setEnergyData(readEnergyData)
               setMeterData(meterData)
-              setData(energyData);
+              setData(bookingData);
               setLoading(false);
               console.log("result ", json)
             })
@@ -130,7 +133,7 @@ export default function UserReports() {
     for (let i = 0; i < energyData.length; i++) {
       totalElectricityAmount += energyData[i].energy_kwh
     }
-    return `${totalElectricityAmount} kwH`
+    return `${Math.floor(totalElectricityAmount)} kwH`
   }
 
 
@@ -226,7 +229,7 @@ export default function UserReports() {
         </SimpleGrid>
         <SimpleGrid columns={{ base: 1, md: 2, xl: 2 }} gap='20px' mb='20px' >
           <WeeklyRevenue data={meterData} />
-          <TotalSpent />
+          <TotalConsumed data={meterData}/>
         </SimpleGrid>
         <SimpleGrid columns={{ base: 1, md: 1, xl: 2 }} gap='40px' mb='40px'>
           <CheckTable columnsData={columnsDataCheck} tableData={tableDataCheck} />

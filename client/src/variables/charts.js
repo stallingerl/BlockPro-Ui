@@ -320,7 +320,16 @@ export const lineChartOptionsTotalSpent = {
     },
   },
   yaxis: {
-    show: false,
+    show: true,
+    color: "black",
+    labels: {
+      show: true,
+      style: {
+        colors: "#A3AED0",
+        fontSize: "12px",
+        fontWeight: "500",
+      },
+    },
   },
   legend: {
     show: false,
