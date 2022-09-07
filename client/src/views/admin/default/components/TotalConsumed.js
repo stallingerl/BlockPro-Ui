@@ -164,7 +164,7 @@ export default function TotalConsumed(props) {
             textAlign='start'
             fontWeight='400'
             lineHeight='100%'>
-            kwH {Math.round(total_consumed)}
+            kW {Math.round(total_consumed)}
           </Text>
           <Flex align='center'>
             <Icon as={IoCheckmarkCircle} color='green.500' me='4px' />

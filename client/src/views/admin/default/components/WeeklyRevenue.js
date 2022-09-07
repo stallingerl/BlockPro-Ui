@@ -75,7 +75,7 @@ export default function WeeklyRevenue(props) {
   })
 
   let options = []
-  options.push( {name: "kwH", data: groupedData })
+  options.push( {name: "kW", data: groupedData })
 
   const myBarChartData = useMemo(() => options);
 
@@ -100,7 +100,7 @@ export default function WeeklyRevenue(props) {
           fontSize='xl'
           fontWeight='700'
           lineHeight='100%'>
-          Daily Produced Electricity in kwH
+          Daily Produced Electricity in kW
         </Text>
         <Button
           align='center'

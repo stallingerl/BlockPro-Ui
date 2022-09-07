@@ -119,21 +119,21 @@ app.get("/admin/default", auth, async (req, res) => {
     var docstore = app.get('docstore')
 
     var myData = []
-   
+
     await docstore.query((e) => {
         if (e.meterId !== undefined) {
-            let decryptedHex =  AES.decrypt(e.meterId, "NeverGuessing").toString();
-            let decrypted = new Buffer(decryptedHex,"hex").toString()
-            if ( decrypted == "0819"){
+            let decryptedHex = AES.decrypt(e.meterId, "NeverGuessing").toString();
+            let decrypted = new Buffer(decryptedHex, "hex").toString()
+            if (decrypted == "0819") {
                 myData.push(e)
             }
         }
 
-        if (e.booking_id !== undefined){
+        if (e.booking_id !== undefined) {
             myData.push(e)
         }
     })
-    console.log("My Mfas", myData)
+    //console.log("My Mfas", myData)
     myData.push({ "balance": s.wallet.balance })
     res.json(myData)
     console.log("sent response")
@@ -167,28 +167,30 @@ app.post("/register", async (req, res) => {
         let encryptedPassword = await bcrypt.hash(password, 10);
 
         // Create user in our database
-        const user = await User.create({
+        var user = await User.create({
             first_name,
             last_name,
             email: email.toLowerCase(), // sanitize: convert email to lowercase
             password: encryptedPassword,
         });
 
+        user = await User.findOne({ email });
+
         // Create token
         const token = jsonwebtoken.sign(
             { user_id: user._id, email },
             process.env.TOKEN_KEY,
             {
-                expiresIn: "2h",
+                expiresIn: "60",
             }
         );
         // save user token
         user.token = token;
 
         // return new user
-        res.status(200).send(token);
+        res.status(200).json({ "user": user, "token": token });
     } catch (err) {
-        console.log(err);
+        res.status(400).json("Invalid Credentials");
     }
 });
 
@@ -211,10 +213,10 @@ app.post("/login", async (req, res) => {
             // Create token
             const token = jsonwebtoken.sign(
                 { user_id: user._id, email },
-                process.env.TOKEN_KEY
-                /* {
-                     expiresIn: "2h",
-                 } */
+                process.env.TOKEN_KEY,
+                {
+                    expiresIn: "2h",
+                }
             );
 
             // save user token
@@ -267,21 +269,10 @@ app.get("*", (req, res) => {
                 password: encryptedPassword,
             });
 
-            // Create token
-            const token = jsonwebtoken.sign(
-                { user_id: user._id, email },
-                process.env.TOKEN_KEY,
-                {
-                    expiresIn: "2h",
-                }
-            );
-            // save user token
-            user.token = token;
-
             // return new user
-            res.status(201).json(user);
+            res.status(200)
         } catch (err) {
-            console.log(err);
+            res.status(400).json("Invalid Credentials");
         }
     });
 

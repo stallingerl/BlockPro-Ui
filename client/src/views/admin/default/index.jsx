@@ -64,6 +64,8 @@ import { useHistory } from 'react-router-dom'
 import TotalConsumed from "./components/TotalConsumed";
 
 
+
+
 export default function UserReports() {
 
   const history = useHistory()
@@ -120,11 +122,17 @@ export default function UserReports() {
               console.log("result ", json)
             })
             .catch(error => {
+              if (error.message.includes("Invalid Token")){
+                localStorage.removeItem('token')
+                history.push('/auth')
+              }
               setLoading(false);
               console.log(error)
             })
         })();
       }
+    }else{
+      history.push('/auth')
     }
   }, []);
 
