@@ -21,7 +21,7 @@ export default function WeeklyRevenue(props) {
   var energyData = props.data
 
   // sort meterData by timestamp
-  energyData.sort(function(a,b){
+  energyData.sort(function (a, b) {
     // Turn your strings into dates, and then subtract them
     // to get a value that is either negative, positive, or zero.
     return new Date(a.date) - new Date(b.date);
@@ -29,6 +29,9 @@ export default function WeeklyRevenue(props) {
 
   var kwh_data = []
   let barChartOptions = barChartOptionsConsumption
+
+  let today = new Date()
+  let currentMonth = today.getMonth()
 
   for (let i = 0; i < energyData.length; i++) {
     let date = new Date(energyData[i].date);
@@ -39,9 +42,10 @@ export default function WeeklyRevenue(props) {
     })
     energyData[i].date = d
     if (barChartOptions.xaxis.categories.indexOf(d) == -1) {
-      barChartOptions.xaxis.categories.push(d)
+      if (date.getMonth() == currentMonth) {
+        barChartOptions.xaxis.categories.push(d)
+      }
     }
-
     kwh_data.push(energyData[i].total_produced)
 
   }
@@ -68,14 +72,24 @@ export default function WeeklyRevenue(props) {
 
   console.log(groupedByDate);
 
+  let groupedCurrentMonth = []
+
+  for (let i = 0; i < groupedByDate.length; i++) {
+    let date = new Date(groupedByDate[i].date)
+    let monthOfCurrentDate = date.getMonth()
+    if (monthOfCurrentDate == currentMonth) {
+      groupedCurrentMonth.push(groupedByDate[i])
+    }
+  }
+
   let groupedData = []
 
-  groupedByDate.forEach((date) => {
+  groupedCurrentMonth.forEach((date) => {
     groupedData.push(Math.round(date.total_produced))
   })
 
   let options = []
-  options.push( {name: "kW", data: groupedData })
+  options.push({ name: "kW", data: groupedData })
 
   const myBarChartData = useMemo(() => options);
 
@@ -118,7 +132,7 @@ export default function WeeklyRevenue(props) {
         </Button>
       </Flex>
 
-      <Box h='100%' mt='auto' overflowY={{ sm: "hidden"}}>
+      <Box h='100%' mt='auto' overflowY={{ sm: "hidden" }}>
         <BarChart
           chartData={myBarChartData}
           chartOptions={myBarChartOptions}

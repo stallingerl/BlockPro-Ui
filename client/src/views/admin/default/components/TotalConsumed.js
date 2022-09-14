@@ -51,6 +51,9 @@ export default function TotalConsumed(props) {
   let lineChartOptions = lineChartOptionsTotalSpent
   lineChartOptions.xaxis.categories = []
 
+  let today = new Date()
+  let currentMonth = today.getMonth()
+
   for (let i = 0; i < energyData.length; i++) {
     let date = new Date(energyData[i].date);
     let d = date.toLocaleString([], {
@@ -60,7 +63,9 @@ export default function TotalConsumed(props) {
     })
     energyData[i].date = d
     if (lineChartOptions.xaxis.categories.indexOf(d) == -1) {
-      lineChartOptions.xaxis.categories.push(d)
+      if (date.getMonth() == currentMonth) {
+        lineChartOptions.xaxis.categories.push(d)
+      }
     }
 
     kwh_data.push(energyData[i].total_consumed)
@@ -89,9 +94,21 @@ export default function TotalConsumed(props) {
 
   console.log(groupedByDate);
 
+
+  let groupedCurrentMonth = []
+
+  for (let i = 0; i < groupedByDate.length; i++) {
+    let date = new Date(groupedByDate[i].date)
+    let monthOfCurrentDate = date.getMonth()
+    if (monthOfCurrentDate == currentMonth) {
+      groupedCurrentMonth.push(groupedByDate[i])
+    }
+  }
+
+
   let groupedData = []
 
-  groupedByDate.forEach((date) => {
+  groupedCurrentMonth.forEach((date) => {
     groupedData.push(Math.round(date.total_consumed))
   })
 
@@ -122,7 +139,7 @@ export default function TotalConsumed(props) {
         fontSize='xl'
         fontWeight='700'
         lineHeight='100%'>
-        Daily Consumed Electricity in kwH
+        Daily Consumed Electricity in kW
       </Text>
       <Flex justify='space-between' ps='0px' pe='20px' pt='5px'>
         <Flex align='center' w='100%'>
