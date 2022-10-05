@@ -95,7 +95,7 @@ export default function TotalConsumed(props) {
   console.log(groupedByDate);
 
 
-  let groupedCurrentMonth = []
+  /*let groupedCurrentMonth = []
 
   for (let i = 0; i < groupedByDate.length; i++) {
     let date = new Date(groupedByDate[i].date)
@@ -104,13 +104,14 @@ export default function TotalConsumed(props) {
       groupedCurrentMonth.push(groupedByDate[i])
     }
   }
-
+  */
 
   let groupedData = []
 
-  groupedCurrentMonth.forEach((date) => {
+  groupedByDate.forEach((date) => {
     groupedData.push(Math.round(date.total_consumed))
   })
+
 
   let total_produced = 0
   let total_consumed = 0

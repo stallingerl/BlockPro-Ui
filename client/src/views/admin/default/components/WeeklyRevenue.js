@@ -72,6 +72,7 @@ export default function WeeklyRevenue(props) {
 
   console.log(groupedByDate);
 
+  /*
   let groupedCurrentMonth = []
 
   for (let i = 0; i < groupedByDate.length; i++) {
@@ -81,10 +82,11 @@ export default function WeeklyRevenue(props) {
       groupedCurrentMonth.push(groupedByDate[i])
     }
   }
+  */ 
 
   let groupedData = []
 
-  groupedCurrentMonth.forEach((date) => {
+  groupedByDate.forEach((date) => {
     groupedData.push(Math.round(date.total_produced))
   })
 

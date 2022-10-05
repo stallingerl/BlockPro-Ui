@@ -4,7 +4,7 @@
   "description": "<h1 align=\"center\">Dashboard for Smart Meter Data in Orbit-DB</h1>",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon server/index.js",
+    "start": "node --max_old_space_size=6144  --optimize_for_size server/index.js",
     "dev": "NODE_ENV=development node server/index.js",
     "build": "cd client && npm install && npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -19,7 +19,6 @@
   "bugs": {
     "url": "https://github.com/stallingerl/orbitdb-dashboard/issues"
   },
-  "homepage": "https://github.com/stallingerl/orbitdb-dashboard#readme",
   "dependencies": {
     "axios": "^0.27.2",
     "bcrypt": "^5.0.1",

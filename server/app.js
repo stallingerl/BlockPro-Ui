@@ -28,16 +28,16 @@ import { User } from "./model/user.js";
 let x = path.join(__dirname, "./client/build")
 app.use(express.static(path.join(__dirname, "./client/build")))
 
-const corsOptions = {
-    origin: 'http://localhost:3000',
-    credentials: true,            //access-control-allow-credentials:true
-    optionSuccessStatus: 200
+/*const corsOptions ={
+    origin:'http://localhost:3000', 
+    credentials:true,            //access-control-allow-credentials:true
+    optionSuccessStatus:200
 }
-app.use(cors(corsOptions));
+app.use(cors(corsOptions));*/
 
 let y = path.join(__dirname, "./client/build/index.html")
 
-app.get(favicon(path.join(__dirname, './client/public', 'favicon.ico')))
+app.get(favicon(path.join(__dirname, './client/build', 'favicon.ico')))
 
 app.post("/trade", auth, async (req, res) => {
     var docstore = app.get('docstore')
@@ -121,10 +121,17 @@ app.get("/admin/default", auth, async (req, res) => {
     var myData = []
 
     await docstore.query((e) => {
+        let dateToday = new Date()
+        dateToday.setDate(1)
+        dateToday.setHours(0)
+        dateToday.setMinutes(0)
+        dateToday.setSeconds(0)
+        let firstOfMonthTimestamp = dateToday.getTime()
+
         if (e.meterId !== undefined) {
             let decryptedHex = AES.decrypt(e.meterId, "NeverGuessing").toString();
             let decrypted = new Buffer(decryptedHex, "hex").toString()
-            if (decrypted == "0819") {
+            if (decrypted == "0815" && e.timestamp > firstOfMonthTimestamp) {
                 myData.push(e)
             }
         }
@@ -233,7 +240,7 @@ app.post("/login", async (req, res) => {
 
 app.get("*", (req, res) => {
     res.sendFile(
-        path.join(__dirname, "./client/build/index.html")
+        path.join(__dirname, "/client/build/index.html")
     );
 
     // Register

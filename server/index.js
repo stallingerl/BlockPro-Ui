@@ -10,7 +10,7 @@ import { network, createNewWallet } from "doichainjs-lib"
 import bootstrapers from './config/bootstrapers.js'
 import { DEFAULT_NETWORK } from "doichainjs-lib/src/lib/network.js";
 import ElectrumClient from '@codewarriorr/electrum-client-js'
-
+const ORBIT_DB = process.env.ORBIT_DB
 
 async function main() {
 
@@ -107,12 +107,17 @@ async function main() {
   // Create docstore DB
   var docstore = await orbitDb.open('/orbitdb/zdpuAo5b8Lv3x4MrF5kZf2aemgdqiMXsb8Mf9pKws9voHsZgb/docstoreDB');
   console.log("Successfully created docstore");
-
+  
   await docstore.load()
 
   await docstore.events.on('replicated', async (address) => {
     console.log("Replicated Database")
   })
+
+  await docstore.events.on('replicated', async (address) => {
+    console.log("Replicated Database")
+  })
+  
 
   console.log(ipfs.isOnline())
   console.log(await ipfs.bootstrap.list())

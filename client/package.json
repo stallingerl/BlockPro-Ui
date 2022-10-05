@@ -1,5 +1,4 @@
 {
-  "homepage": "https://horizon-ui.com/horizon-ui-chakra",
   "name": "horizon-ui-chakra",
   "version": "1.0.1",
   "private": true,
@@ -71,6 +70,5 @@
   },
   "devDependencies": {
     "gh-pages": "^3.2.3"
-  },
-  "proxy": "http://localhost:3001"
+  }
 }

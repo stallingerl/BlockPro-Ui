@@ -175,7 +175,7 @@ function SignUp() {
                             fontWeight='500'
                             color={textColor}
                             mb='8px'>
-                            First Name<Text color={brandStars}>*</Text>
+                            Last Name<Text color={brandStars}>*</Text>
                         </FormLabel>
                         <Input
                             isRequired={true}
@@ -224,7 +224,7 @@ function SignUp() {
                             <Input
                                 isRequired={true}
                                 fontSize='sm'
-                                placeholder='password'
+                                placeholder='Password'
                                 mb='24px'
                                 size='lg'
                                 value={password}
